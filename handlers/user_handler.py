@@ -220,7 +220,12 @@ async def article_confirmed(call: CallbackQuery, state: FSMContext, bot):
     )
 
 @user_router.callback_query(F.data == "i_paid")
-async def user_i_paid(call: CallbackQuery):
+async def user_i_paid(call: CallbackQuery, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state == ArticleStates.scopus_check:
+        await state.set_state(ArticleStates.scopus_check)
+    else:
+        await state.set_state(ArticleStates.article_check)
     await call.message.edit_text(
         "📸 Iltimos, to'lov cheki rasmini yuboring (screenshot yoki foto):"
     )
