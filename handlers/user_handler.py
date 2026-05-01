@@ -341,10 +341,7 @@ async def show_scopus_confirm(msg, state: FSMContext, user_id: int):
         f"📧 <b>Email:</b> {data.get('email')}\n"
         f"🔬 <b>ORCID ID:</b> {data.get('orcid')}\n"
     )
-    if hasattr(msg, 'edit_text'):
-        await msg.edit_text(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
-    else:
-        await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
 
 @user_router.callback_query(ArticleStates.scopus_confirm, F.data == "confirm_order")
 async def scopus_confirmed(call: CallbackQuery, state: FSMContext, bot):
