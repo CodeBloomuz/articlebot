@@ -47,8 +47,8 @@ async def back_menu(call: CallbackQuery, state: FSMContext):
 async def contact_info(call: CallbackQuery):
     await call.message.edit_text(
         "📞 <b>Bog'lanish uchun:</b>\n\n"
-        "Admin: @admin_username\n"
-        "Ish vaqti: 09:00 - 18:00",
+        "Admin: @zxcva179\n"
+        "Ish vaqti: 08:00 - 23:00",
         reply_markup=back_to_menu(),
         parse_mode="HTML"
     )
@@ -314,7 +314,7 @@ async def scopus_email(message: Message, state: FSMContext):
     await message.answer(
         "6️⃣ ORCID ID ingizni kiriting:\n"
         "<i>Masalan: 0000-0002-1825-0097</i>\n"
-        "(Yo'q bo'lsa ham kiriting: yo'q)",
+        "(Mavjud bo'lmasa ro'yxatdan o'ting: https://orcid.org/)",
         reply_markup=skip_keyboard(),
         parse_mode="HTML"
     )
