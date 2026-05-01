@@ -47,8 +47,8 @@ async def back_menu(call: CallbackQuery, state: FSMContext):
 async def contact_info(call: CallbackQuery):
     await call.message.edit_text(
         "📞 <b>Bog'lanish uchun:</b>\n\n"
-        "Admin: @zxcva179\n"
-        "Ish vaqti: 08:00 - 23:00",
+        "Admin: @admin_username\n"
+        "Ish vaqti: 09:00 - 18:00",
         reply_markup=back_to_menu(),
         parse_mode="HTML"
     )
@@ -175,7 +175,7 @@ async def article_email(message: Message, state: FSMContext):
     await state.update_data(email=message.text)
     await show_article_confirm(message, state, message.from_user.id)
 
-async def show_article_confirm(msg, state, user_id):
+async def show_article_confirm(msg, state: FSMContext, user_id: int):
     data = await state.get_data()
     await state.set_state(ArticleStates.article_confirm)
     text = (
@@ -191,7 +191,10 @@ async def show_article_confirm(msg, state, user_id):
         f"📞 <b>Telefon:</b> {data.get('contact')}\n"
         f"📧 <b>Email:</b> {data.get('email')}\n"
     )
-    await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    if hasattr(msg, 'edit_text'):
+        await msg.edit_text(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    else:
+        await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
 
 @user_router.callback_query(ArticleStates.article_confirm, F.data == "confirm_order")
 async def article_confirmed(call: CallbackQuery, state: FSMContext, bot):
@@ -220,12 +223,7 @@ async def article_confirmed(call: CallbackQuery, state: FSMContext, bot):
     )
 
 @user_router.callback_query(F.data == "i_paid")
-async def user_i_paid(call: CallbackQuery, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state == ArticleStates.scopus_check:
-        await state.set_state(ArticleStates.scopus_check)
-    else:
-        await state.set_state(ArticleStates.article_check)
+async def user_i_paid(call: CallbackQuery):
     await call.message.edit_text(
         "📸 Iltimos, to'lov cheki rasmini yuboring (screenshot yoki foto):"
     )
@@ -255,20 +253,24 @@ async def article_check_received(message: Message, state: FSMContext, bot):
     )
 
     photo_id = message.photo[-1].file_id
-    await bot.send_photo(
-        ADMIN_GROUP_ID,
-        photo=photo_id,
-        caption=caption,
-        reply_markup=admin_check_keyboard(order_id, message.from_user.id),
-        parse_mode="HTML"
-    )
-
-    await message.answer(
-        "⏳ <b>Chekingiz adminga yuborildi!</b>\n\n"
-        "Admin tekshirgandan so'ng sizga xabar beriladi.\n"
-        "Maqola yozilishi <b>30 daqiqadan 1 soatgacha</b> davom etishi mumkin.",
-        parse_mode="HTML"
-    )
+    try:
+        await bot.send_photo(
+            ADMIN_GROUP_ID,
+            photo=photo_id,
+            caption=caption,
+            reply_markup=admin_check_keyboard(order_id, message.from_user.id),
+            parse_mode="HTML"
+        )
+        await message.answer(
+            "⏳ <b>Chekingiz adminga yuborildi!</b>\n\n"
+            "Admin tekshirgandan so'ng sizga xabar beriladi.\n"
+            "Maqola yozilishi <b>30 daqiqadan 1 soatgacha</b> davom etishi mumkin.",
+            parse_mode="HTML"
+        )
+    except Exception as e:
+        import logging
+        logging.error(f"ADMIN GURUHGA XABAR YUBORISHDA XATO: {e} | ADMIN_GROUP_ID={ADMIN_GROUP_ID}")
+        await message.answer(f"❌ Xato yuz berdi: {e}")
     await state.clear()
 
 # ==================== SCOPUS MAQOLA ====================
@@ -319,7 +321,7 @@ async def scopus_email(message: Message, state: FSMContext):
     await message.answer(
         "6️⃣ ORCID ID ingizni kiriting:\n"
         "<i>Masalan: 0000-0002-1825-0097</i>\n"
-        "(Mavjud bo'lmasa ro'yxatdan o'ting: https://orcid.org/)",
+        "(Yo'q bo'lsa ham kiriting: yo'q)",
         reply_markup=skip_keyboard(),
         parse_mode="HTML"
     )
@@ -346,7 +348,10 @@ async def show_scopus_confirm(msg, state: FSMContext, user_id: int):
         f"📧 <b>Email:</b> {data.get('email')}\n"
         f"🔬 <b>ORCID ID:</b> {data.get('orcid')}\n"
     )
-    await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    if hasattr(msg, 'edit_text'):
+        await msg.edit_text(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    else:
+        await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
 
 @user_router.callback_query(ArticleStates.scopus_confirm, F.data == "confirm_order")
 async def scopus_confirmed(call: CallbackQuery, state: FSMContext, bot):
