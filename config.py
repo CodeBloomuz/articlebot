@@ -1,0 +1,5 @@
+BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+ADMIN_GROUP_ID = -100123456789  # Admin guruh ID sini shu yerga yozing
+
+CARD_NUMBER = "8600 1234 5678 9012"
+CARD_OWNER = "Ism Familiya"
