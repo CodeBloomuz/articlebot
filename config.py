@@ -1,5 +1,5 @@
 BOT_TOKEN = "8614829307:AAFAEPcq5rNxsJaeckXzR9NxP57EHkRpxDI"
-ADMIN_GROUP_ID = 6551375195  # Admin guruh ID sini shu yerga yozing
+ADMIN_GROUP_ID = -1003334957329  # Admin guruh ID sini shu yerga yozing
 
 CARD_NUMBER = "5614 6812 2732 2728"
 CARD_OWNER = "Diyorbek S"
