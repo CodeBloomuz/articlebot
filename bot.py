@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
+    await bot.delete_webhook(drop_pending_updates=True)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(admin_router)
     dp.include_router(user_router)
