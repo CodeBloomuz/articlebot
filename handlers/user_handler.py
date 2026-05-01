@@ -175,7 +175,7 @@ async def article_email(message: Message, state: FSMContext):
     await state.update_data(email=message.text)
     await show_article_confirm(message, state, message.from_user.id)
 
-async def show_article_confirm(msg, state: FSMContext, user_id: int):
+async def show_article_confirm(msg, state, user_id):
     data = await state.get_data()
     await state.set_state(ArticleStates.article_confirm)
     text = (
@@ -191,10 +191,7 @@ async def show_article_confirm(msg, state: FSMContext, user_id: int):
         f"📞 <b>Telefon:</b> {data.get('contact')}\n"
         f"📧 <b>Email:</b> {data.get('email')}\n"
     )
-    if hasattr(msg, 'edit_text'):
-        await msg.edit_text(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
-    else:
-        await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
+    await msg.answer(text, reply_markup=confirm_keyboard(), parse_mode="HTML")
 
 @user_router.callback_query(ArticleStates.article_confirm, F.data == "confirm_order")
 async def article_confirmed(call: CallbackQuery, state: FSMContext, bot):
